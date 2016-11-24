@@ -70,7 +70,7 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 	start = start + count
 
 	count = 1
-	resolution = buffer(start, count):uint()
+	resolution = buffer(start, count):uint() * 0.36
 	subtree:add(buffer(start, count), "Angular Resolution: " .. resolution)
 
 
