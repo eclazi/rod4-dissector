@@ -65,8 +65,16 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 
 	-- Scan Number -- 
 	count  = 8
-	scanNumberRaw = buffer(start, count):uint64()
-	subtree:add(buffer(start, count), "scan")
+
+	scanNumber = 0
+	for i=0, 3 do
+		byte = buffer(start + i * 2, 1):uint()
+		info(string.format("%x", byte))
+		scanNumber = bit.bor(scanNumber, bit.lshift(byte, (3 - i) * 8))
+		info(string.format("%x", scanNumber))
+	end
+	subtree:add(buffer(start, count), "Scan Number: " .. scanNumber)
+	
 	start = start + count
 
 	count = 1
