@@ -113,17 +113,31 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 
 	count = 2
 	minStartAngle= -5.04
-	startAngle = (buffer(start, count):uint() - 1) * resolution + minStartAngle
-	subtree:add(buffer(start, count), "Start Angle: " .. startAngle)
+	startAngle = (buffer(start, count):uint() - 1)
+	startAngleDeg = startAngle * resolution + minStartAngle
+	subtree:add(buffer(start, count), "Start Angle: " .. startAngleDeg)
 	start = start + count
 
 	-- Stop Angle
-	stopAngle = (buffer(start, count):uint() - 1) * resolution + minStartAngle
+	stopAngle = (buffer(start, count):uint() - 1)
+	stopAngleDeg = stopAngle * resolution + minStartAngle
 	subtree:add(buffer(start, count), "Stop Angle: " .. stopAngle)
 	start = start + count
 
+	-- Calculate number of distance values we expect
+	nValues = stopAngle - startAngle + 1
+	count = nValues * 2
+	distanceTree = subtree:add(buffer(start, count), "Distances : " .. nValues)
 
-
+	for i=0, nValues-1 do
+		count = 2
+		bytes = buffer(start, count)
+		inNearField = bytes:bitfield(0)
+		dist = bit.band(bytes:uint(), 0xFFFE)
+		angle = i * resolution + minStartAngle
+		distanceTree:add(bytes, string.format("Angle %d, %.2f° : %d mm", i + 1, angle, dist))
+		start = start + count
+	end
 end
 
 tcpTable:add(9008, rod4Proto)
