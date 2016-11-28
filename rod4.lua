@@ -138,6 +138,13 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 		distanceTree:add(bytes, string.format("Angle %d, %.2f° : %d mm", i + 1, angle, dist))
 		start = start + count
 	end
+
+	count = 1
+	subtree:add(buffer(start, 1), "Check Byte: 0x" .. buffer(start, 1))
+	start = start + count
+
+	count = 3
+	subtree:add(buffer(start, count),"End: 0x" .. buffer(start, count))
 end
 
 tcpTable:add(9008, rod4Proto)
