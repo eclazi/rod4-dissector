@@ -53,9 +53,36 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 	subtree:add(buffer(start, count), "Option 1: " .. str)
 	start = start + count
 
+	str = ""
 	count = 1
 	if option2Available then
-		subtree:add(buffer(start, count), "Option 2:")
+		option2 = buffer(start, count)
+		if option2:bitfield(0) == 1 then
+			str = str .. "Field near 1 occupied, "
+		end
+		if option2:bitfield(1) == 1 then
+			str = str .. "Field rar 1 occupied, "
+		end
+		if option2:bitfield(2) == 1 then
+			str = str .. "Warning, "
+		end
+		if option2:bitfield(3) == 1 then
+			str = str .. "Fault, "
+		end
+		if option2:bitfield(4) == 1 then
+			str = str .. "Restart-disable, "
+		end
+		if option2:bitfield(5) == 1 then
+			str = str .. "Field near 2 occupied, "
+		end
+		if option2:bitfield(6) == 1 then
+			str = str .. "Field far 2 occupied, "
+		end
+		if option2:bitfield(7) == 1 then
+			str = str .. "Option byte 3 transferred, "
+		end
+		str = str:sub(1, -3)
+		subtree:add(buffer(start, count), "Option 2: " .. str)
 		start = start + count
 	end
 	if option3Available then
