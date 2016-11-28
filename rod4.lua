@@ -4,6 +4,7 @@ tcpTable = DissectorTable.get("tcp.port")
 
 function rod4Proto.dissector(buffer, pinfo, tree)
 	start = 0
+	pinfo.cols.protocol = "ROD4"
 	subtree = tree:add(rod4Proto, buffer(), string.format("ROD4 Binary Protocol"))
 
 	count = 2
