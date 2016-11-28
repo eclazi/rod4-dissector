@@ -8,7 +8,7 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 
 	count = 2
 	header = buffer(start, count):uint()
-	subtree:add(buffer(start, count), "Header " .. header)
+	subtree:add(buffer(start, count), string.format("Header: 0x%04x", header))
 	start = start + count
 
 	count = 1
