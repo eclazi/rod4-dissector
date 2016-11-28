@@ -75,9 +75,26 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 	
 	start = start + count
 
+	-- Angular Resolution
+
 	count = 1
 	resolution = buffer(start, count):uint() * 0.36
 	subtree:add(buffer(start, count), "Angular Resolution: " .. resolution)
+	start = start + count
+
+	-- Start Angle
+
+	count = 2
+	minStartAngle= -5.04
+	startAngle = (buffer(start, count):uint() - 1) * resolution + minStartAngle
+	subtree:add(buffer(start, count), "Start Angle: " .. startAngle)
+	start = start + count
+
+	-- Stop Angle
+	stopAngle = (buffer(start, count):uint() - 1) * resolution + minStartAngle
+	subtree:add(buffer(start, count), "Stop Angle: " .. stopAngle)
+	start = start + count
+
 
 
 end
