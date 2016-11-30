@@ -2,6 +2,8 @@ rod4Proto = Proto("rod4", "ROD4")
 
 tcpTable = DissectorTable.get("tcp.port")
 
+parseDistances = true
+
 function rod4Proto.dissector(buffer, pinfo, tree)
 	start = 0
 	pinfo.cols.protocol = "ROD4"
@@ -130,14 +132,16 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 	count = nValues * 2
 	distanceTree = subtree:add(buffer(start, count), "Distances : " .. nValues)
 
-	for i=0, nValues-1 do
-		count = 2
-		bytes = buffer(start, count)
-		inNearField = bytes:bitfield(0)
-		dist = bit.band(bytes:uint(), 0xFFFE)
-		angle = i * resolution + minStartAngle
-		distanceTree:add(bytes, string.format("Angle %d, %.2f° : %d mm", i + 1, angle, dist))
-		start = start + count
+	if parseDistances then
+		for i=0, nValues-1 do
+			count = 2
+			bytes = buffer(start, count)
+			inNearField = bytes:bitfield(0)
+			dist = bit.band(bytes:uint(), 0xFFFE)
+			angle = i * resolution + minStartAngle
+			distanceTree:add(bytes, string.format("Angle %d, %.2f° : %d mm", i + 1, angle, dist))
+			start = start + count
+		end
 	end
 
 	count = 1
