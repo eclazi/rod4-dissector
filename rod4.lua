@@ -3,6 +3,7 @@ rod4Proto = Proto("rod4", "ROD4")
 tcpTable = DissectorTable.get("tcp.port")
 
 parseDistances = true
+parseChecksum = true
 
 function rod4Proto.dissector(buffer, pinfo, tree)
 	start = 0
@@ -159,11 +160,32 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 			distanceTree:add(bytes, string.format("Angle %d, %.2f° : %d mm", i + 1, angle, dist))
 			start = start + count
 		end
+	else
+		start = start + nValues * 2
 	end
 
+	-- Checksum
+
 	count = 1
-	subtree:add(buffer(start, 1), "Check Byte: 0x" .. buffer(start, 1))
+	if parseChecksum then
+		xor = 0
+		for i=0,start-1 do
+			xor = bit.bxor(xor, buffer(i, 1):uint())
+		end
+
+		checksum = buffer(start, 1):uint()
+		str = string.format("Check Byte: 0x%02X ", checksum)
+		if checksum == xor then
+			str = str .. "Valid"
+		else
+			str = str .. string.format("Invalid, Calculated 0x%02X", xor)
+		end
+
+		subtree:add(buffer(start, 1), str)
+	end
 	start = start + count
+
+	-- ETX
 
 	count = 3
 	subtree:add(buffer(start, count),"End: 0x" .. buffer(start, count))
