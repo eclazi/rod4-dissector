@@ -88,8 +88,25 @@ function rod4Proto.dissector(buffer, pinfo, tree)
 		subtree:add(buffer(start, count), "Option 2: " .. str)
 		start = start + count
 	end
+
+	str = ""
 	if option3Available then
-		subtree:add(buffer(start, count), "Option 3:")
+		
+		field1 = option2:bitfield(0, 3)
+		if field1 > 0 then
+			str = str .. string.format("Field 1 Pair %d, ", field1)
+		end
+		field2 = option2:bitfield(4, 3)
+		if field2 > 0 then
+			str = str .. string.format("Field 2 Pair %d, ", field2)
+		end
+
+		if option2:bitfield(7) == 1 then
+			str = str .. "Fn1/Fn2 switched on, "
+		end
+
+		str = str:sub(1, -3)
+		subtree:add(buffer(start, count), "Option 3: " .. str)
 		start = start + count
 	end
 
